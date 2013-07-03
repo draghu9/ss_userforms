@@ -313,7 +313,7 @@ class UserDefinedForm extends Page {
  * @package userforms
  */
 
-class UserDefinedForm_Controller extends Page_Controller {
+class UserDefinedForm_Controller extends SecurePage_Controller {
 	
 	/**
 	 * Load all the custom jquery needed to run the custom 
