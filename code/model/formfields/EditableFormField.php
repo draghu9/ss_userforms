@@ -565,10 +565,9 @@ class EditableFormField extends DataObject {
 
         //For some odd reason, directly calling the default Parent() generates a blank,
         //new instance if there isn't one - duplicate this functionality here
-        if (is_null($parent)) {
+        if (is_null($parent) || $parent==false) {
             $parent = new $parentClass;
         }
-
         return $parent;
     }
 
