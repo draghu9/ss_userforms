@@ -152,8 +152,14 @@ class FieldEditor extends FormField {
 					if($editable->ParentID == 0) {
 						$editable->ParentID = $record->ID;
 					}
-					
-					// save data
+
+
+                    //CUSTOM - set Parent class- it could be a UserDefinedForm or a UserDefinedFieldSet
+                    $editable->ParentClass = get_class($record);
+                    //CUSTOM
+
+
+                    // save data
 					$editable->populateFromPostData($newEditableData);
 				}
 			}
@@ -193,6 +199,9 @@ class FieldEditor extends FormField {
 				$field = new $className();
 				$field->write();
 				$field->ParentID = $this->form->getRecord()->ID;
+                //CUSTOM - set Parent class- it could be a UserDefinedForm or a UserDefinedFieldSet
+                $field->ParentClass = get_class($this->form->getRecord());
+                //CUSTOM
 				$field->Name = $field->class . $field->ID;
 				$field->Sort = $sort;
 				$field->write();
