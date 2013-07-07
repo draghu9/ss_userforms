@@ -387,6 +387,7 @@ class EditableFormField extends DataObject {
 	 *
 	 * @return FieldSet
 	 */
+    /*
 	public function getFieldConfiguration() {
 		$extraClass = ($this->getSetting('ExtraClass')) ? $this->getSetting('ExtraClass') : '';
 
@@ -422,7 +423,52 @@ class EditableFormField extends DataObject {
 			$right
 		);
 	}
-	
+	*/
+
+    //CUSTOM - adding from previous
+    /**
+     * Generate a name for the Setting field
+     *
+     * @param String name of the setting
+     * @return String
+     */
+    public function getSettingFieldName($field) {
+        $name = $this->getFieldName('CustomSettings');
+
+        return $name . '[' . $field .']';
+    }
+    // CUSTOM
+    //CUSTOM - rewritten, RightTitle removed
+
+    public function getFieldConfiguration() {
+
+        //Internal field is the UserDefinedForms generated field name, eg; EditableRadioField148
+        //Output field name is the 'nicer' name used for output to webservices and xml, eg; CurrentWorkplaceName
+
+        $internalField = new LiteralField(
+            'internalField',
+            '<div class="field text"><label class="left">Internal Field Name: <strong>' . $this->Name . '</strong></label></div>'
+        );
+
+        $outputFieldName = $this->getSetting('OutputFieldName');
+
+        //default to the fields Name if not set
+        if ($outputFieldName == '') {
+            $outputFieldName = $this->Name;
+        }
+
+        $outputField = new TextField(
+            $this->getSettingFieldName('OutputFieldName'),
+            'Output Field Name',
+            $outputFieldName
+        );
+
+        return new FieldList(
+            $internalField,
+            $outputField
+        );
+    }
+    //CUSTOM
 	/**
 	 * Append custom validation fields to the default 'Validation' 
 	 * section in the editable options view
