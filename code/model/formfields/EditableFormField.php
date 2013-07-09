@@ -571,4 +571,60 @@ class EditableFormField extends DataObject {
         return $parent;
     }
 
+
+    //Returns the "OutputFieldName" field prefixed with the UserDefinedFieldSet Code ,
+    //eg; OutputFieldName = "SupervisorName",
+    //    Code = "ECEWorkplace"
+    //    output will be: "ECEWorkplace_SupervisorName"
+    //
+    // This is done to ensure that the name is namespaced, unique and nice for output
+    // to xml and/or webservices
+    public function OutputName() {
+        $name = $this->getField("Name");
+        $parent = $this->Parent();
+
+        if (!is_null($parent)) {
+            $outputFieldName = $this->getSetting('OutputFieldName');
+
+            if ($outputFieldName) {
+                $name = $parent->Code . "_" . $outputFieldName;
+            }
+        }
+
+        return $name;
+    }
+
+    //CUSTOM
+
+
+    //CUSTOM
+    //Return the display value for this field
+    //Override these if your editable form field has more complex rules
+    public function getDisplayValueFromData($data) {
+
+        $value = (isset($data[$this->Name])) ? $data[$this->Name] : null;
+
+        return Convert::raw2xml($value);
+    }
+
+    //return the xml value for this field (by default, the same as the display)
+    public function getXMLValueFromData($data) {
+
+        $value = (isset($data[$this->Name])) ? $data[$this->Name] : null;
+
+        return Util::xmlEncodeArray($value);
+    }
+
+
+    public function hasReminder()
+    {
+        return false;
+    }
+
+    public function shouldShowOnSummaryPage()
+    {
+        return true;
+    }
+    //CUSTOM
+
 }
