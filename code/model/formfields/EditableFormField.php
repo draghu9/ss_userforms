@@ -604,6 +604,8 @@ class EditableFormField extends DataObject {
 
         $value = (isset($data[$this->Name])) ? $data[$this->Name] : null;
 
+        $this->extend('customiseDisplayValueFromData',$data,$value);
+
         return Convert::raw2xml($value);
     }
 
@@ -611,6 +613,8 @@ class EditableFormField extends DataObject {
     public function getXMLValueFromData($data) {
 
         $value = (isset($data[$this->Name])) ? $data[$this->Name] : null;
+
+        $this->extend('customiseXMLValueFromData',$data,$value);
 
         return Util::xmlEncodeArray($value);
     }
