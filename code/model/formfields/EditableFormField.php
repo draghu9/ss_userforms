@@ -622,12 +622,20 @@ class EditableFormField extends DataObject {
 
     public function hasReminder()
     {
-        return false;
+        $result=false;
+
+        $this->extend('customiseHasReminderValue',$result);
+
+        return $result;
     }
 
     public function shouldShowOnSummaryPage()
     {
-        return true;
+        $result=true;
+
+        $this->extend('customiseShouldShowOnSummaryPageValue',$result);
+
+        return $result;
     }
     //CUSTOM
 
