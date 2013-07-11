@@ -256,6 +256,7 @@ class EditableFormField extends DataObject {
 		// check for existing ones
 		if($rules = $this->Dependencies()) {
 			foreach($rules as $rule => $data) {
+
 				// recreate all the field object to prevent caching
 				$outputFields = new ArrayList();
 				
@@ -386,6 +387,7 @@ class EditableFormField extends DataObject {
 	 *
 	 * @return FieldSet
 	 */
+    /*
 	public function getFieldConfiguration() {
 		$extraClass = ($this->getSetting('ExtraClass')) ? $this->getSetting('ExtraClass') : '';
 
@@ -421,7 +423,52 @@ class EditableFormField extends DataObject {
 			$right
 		);
 	}
-	
+	*/
+
+    //CUSTOM - adding from previous
+    /**
+     * Generate a name for the Setting field
+     *
+     * @param String name of the setting
+     * @return String
+     */
+    public function getSettingFieldName($field) {
+        $name = $this->getFieldName('CustomSettings');
+
+        return $name . '[' . $field .']';
+    }
+    // CUSTOM
+    //CUSTOM - rewritten, RightTitle removed
+
+    public function getFieldConfiguration() {
+
+        //Internal field is the UserDefinedForms generated field name, eg; EditableRadioField148
+        //Output field name is the 'nicer' name used for output to webservices and xml, eg; CurrentWorkplaceName
+
+        $internalField = new LiteralField(
+            'internalField',
+            '<div class="field text"><label class="left">Internal Field Name: <strong>' . $this->Name . '</strong></label></div>'
+        );
+
+        $outputFieldName = $this->getSetting('OutputFieldName');
+
+        //default to the fields Name if not set
+        if ($outputFieldName == '') {
+            $outputFieldName = $this->Name;
+        }
+
+        $outputField = new TextField(
+            $this->getSettingFieldName('OutputFieldName'),
+            'Output Field Name',
+            $outputFieldName
+        );
+
+        return new FieldList(
+            $internalField,
+            $outputField
+        );
+    }
+    //CUSTOM
 	/**
 	 * Append custom validation fields to the default 'Validation' 
 	 * section in the editable options view
@@ -498,4 +545,90 @@ class EditableFormField extends DataObject {
 		
 		return DBField::create_field('Varchar', $errorMessage);
 	}
+
+    //CUSTOM
+    //This is used to determine if the parent is a UserDefinedForm (default) or a UserDefinedFieldSet.
+    //It overrides the default Parent call as its set to UserDefinedForm ^ above
+    public function Parent() {
+        $parent = null;
+        $parentClass = "UserDefinedForm";
+
+        //If ParentClass is set, use that instead of the default above
+        if (!is_null($this->ParentClass)) {
+            $parentClass = $this->ParentClass;
+        }
+
+        //If ParentID is not null, fetch the instance for the given class & ID from the database
+        if (!is_null($this->ParentID)) {
+            $parent = DataObject::get_by_id($parentClass, $this->ParentID);
+        }
+
+        //For some odd reason, directly calling the default Parent() generates a blank,
+        //new instance if there isn't one - duplicate this functionality here
+        if (is_null($parent) || $parent==false) {
+            $parent = new $parentClass;
+        }
+        return $parent;
+    }
+
+
+    //Returns the "OutputFieldName" field prefixed with the UserDefinedFieldSet Code ,
+    //eg; OutputFieldName = "SupervisorName",
+    //    Code = "ECEWorkplace"
+    //    output will be: "ECEWorkplace_SupervisorName"
+    //
+    // This is done to ensure that the name is namespaced, unique and nice for output
+    // to xml and/or webservices
+    public function OutputName() {
+        $name = $this->getField("Name");
+        $parent = $this->Parent();
+
+        if (!is_null($parent)) {
+            $outputFieldName = $this->getSetting('OutputFieldName');
+
+            if ($outputFieldName) {
+                $name = $parent->Code . "_" . $outputFieldName;
+            }
+        }
+
+        return $name;
+    }
+
+    //CUSTOM
+
+
+    //CUSTOM
+    //Return the display value for this field
+    //Override these if your editable form field has more complex rules
+    public function getDisplayValueFromData($data) {
+
+        $value = (isset($data[$this->Name])) ? $data[$this->Name] : null;
+
+        $this->extend('customiseDisplayValueFromData',$data,$value);
+
+        return Convert::raw2xml($value);
+    }
+
+    //return the xml value for this field (by default, the same as the display)
+    public function getXMLValueFromData($data) {
+
+        $value = (isset($data[$this->Name])) ? $data[$this->Name] : null;
+
+        $this->extend('customiseXMLValueFromData',$data,$value);
+
+        return Util::xmlEncodeArray($value);
+    }
+
+
+    public function hasReminder()
+    {
+        return false;
+    }
+
+    public function shouldShowOnSummaryPage()
+    {
+        return true;
+    }
+    //CUSTOM
+
 }
