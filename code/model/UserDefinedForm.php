@@ -323,10 +323,14 @@ class UserDefinedForm_Controller extends SecurePage_Controller {
 		parent::init();
 		
 		// load the jquery
-		Requirements::javascript(FRAMEWORK_DIR .'/thirdparty/jquery/jquery.js');
-		Requirements::javascript('userforms/thirdparty/jquery-validate/jquery.validate.js');
-		Requirements::javascript('userforms/javascript/UserForm_frontend.js');
-		if($this->HideFieldLabels) Requirements::javascript('userforms/thirdparty/Placeholders.js/Placeholders.min.js');
+		//Requirements::javascript(FRAMEWORK_DIR .'/thirdparty/jquery/jquery.js');
+		//Requirements::javascript('userforms/thirdparty/jquery-validate/jquery.validate.js');
+		//Requirements::javascript('userforms/javascript/UserForm_frontend.js');
+
+
+       // Requirements::clear('userforms/javascript/UserForm_frontend.js');
+
+		//if($this->HideFieldLabels) Requirements::javascript('userforms/thirdparty/Placeholders.js/Placeholders.min.js');
 	}
 	
 	/**
@@ -510,7 +514,8 @@ class UserDefinedForm_Controller extends SecurePage_Controller {
 		$messages = $this->array2json($messages);
 		
 		// set the custom script for this form
-		Requirements::customScript(<<<JS
+
+        /*Requirements::customScript(<<<JS
 			(function($) {
 				$(document).ready(function() {
 					$("#Form_Form").validate({
@@ -534,7 +539,7 @@ class UserDefinedForm_Controller extends SecurePage_Controller {
 				});
 			})(jQuery);
 JS
-, 'UserFormsValidation');
+, 'UserFormsValidation');*/
 		
 		$this->extend('updateRequiredFields', $required);
 		

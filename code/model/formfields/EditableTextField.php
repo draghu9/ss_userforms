@@ -41,10 +41,15 @@ class EditableTextField extends EditableFormField {
 		if($this->getSetting('Rows') && $this->getSetting('Rows') > 1) {
 			$taf = new TextareaField($this->Name, $this->Title);
 			$taf->setRows($this->getSetting('Rows'));
+
+            $taf->setSmallFieldHolderTemplate("FormField_Holder");
+
 			return $taf;
 		}
 		else {
-			return new TextField($this->Name, $this->Title, null, $this->getSetting('MaxLength'));
+            $TextField = new TextField($this->Name, $this->Title, null, $this->getSetting('MaxLength'));
+            $TextField->setSmallFieldHolderTemplate("FormField_Holder");
+			return  $TextField;
 		}
 	}
 	
